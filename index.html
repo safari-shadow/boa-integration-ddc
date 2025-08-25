@@ -42,19 +42,20 @@
 
             Logger.postMessage('Step 5: Form submitted. Waiting for Cardinal response...');
         };
-
-        // Listen for the response from Cardinal
-        window.addEventListener("message", function (event) {
-            Logger.postMessage('Step 6: Message event received. Origin: ' + event.origin);
-            if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
-                Logger.postMessage('Step 7: Cardinal response received: ' + JSON.stringify(event.data));
-                // Send the result back to Flutter
-                Logger.postMessage(JSON.stringify(event.data));
-            } else {
-                Logger.postMessage('Step 7: Ignored message from origin: ' + event.origin);
-            }
-        }, false);
     </script>
 </body>
+<script>
+    // Listen for the response from Cardinal
+    window.addEventListener("message", function (event) {
+        Logger.postMessage('Step 6: Message event received. Origin: ' + event.origin);
+        if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
+            Logger.postMessage('Step 7: Cardinal response received: ' + JSON.stringify(event.data));
+            // Send the result back to Flutter
+            Logger.postMessage(JSON.stringify(event.data));
+        } else {
+            Logger.postMessage('Step 7: Ignored message from origin: ' + event.origin);
+        }
+    }, false);
+</script>
 
 </html>
