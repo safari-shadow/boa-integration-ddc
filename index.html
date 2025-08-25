@@ -15,27 +15,43 @@
     </form>
 
     <script>
+        // Logger utility to log to console and postMessage
+        window.Logger = {
+            postMessage: function (msg) {
+                if (window.flutter_inappwebview) {
+                    window.flutter_inappwebview.callHandler('log', msg);
+                }
+                console.log('[LOG]', msg);
+            }
+        };
+
         // Function to receive configuration from Flutter
         window.receiveDataCollectionConfig = function (config) {
+            Logger.postMessage('Step 1: Received config: ' + JSON.stringify(config));
             const form = document.getElementById('cardinal_collection_form');
             const input = document.getElementById('cardinal_collection_form_input');
 
-            // Set the form action URL
+            Logger.postMessage('Step 2: Setting form action to: ' + config.deviceDataCollectionUrl);
             form.action = config.deviceDataCollectionUrl;
-            // Set the JWT value
+
+            Logger.postMessage('Step 3: Setting JWT value.');
             input.value = config.accessToken;
 
-            // Submit the form
+            Logger.postMessage('Step 4: Submitting form.');
             form.submit();
 
-            Logger.postMessage("Data collection config received.");
+            Logger.postMessage('Step 5: Form submitted. Waiting for Cardinal response...');
         };
 
         // Listen for the response from Cardinal
         window.addEventListener("message", function (event) {
+            Logger.postMessage('Step 6: Message event received. Origin: ' + event.origin);
             if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
+                Logger.postMessage('Step 7: Cardinal response received: ' + JSON.stringify(event.data));
                 // Send the result back to Flutter
                 Logger.postMessage(JSON.stringify(event.data));
+            } else {
+                Logger.postMessage('Step 7: Ignored message from origin: ' + event.origin);
             }
         }, false);
     </script>
