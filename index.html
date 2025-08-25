@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Data Collection</title>
+</head>
+
+<body>
+    <iframe id="cardinal_collection_iframe" name="collectionIframe" height="1" width="1"
+        style="display: none;"></iframe>
+    <form id="cardinal_collection_form" method="POST" target="collectionIframe">
+        <input id="cardinal_collection_form_input" type="hidden" name="JWT">
+    </form>
+
+    <script>
+        // Function to receive configuration from Flutter
+        window.receiveDataCollectionConfig = function (config) {
+            const form = document.getElementById('cardinal_collection_form');
+            const input = document.getElementById('cardinal_collection_form_input');
+
+            // Set the form action URL
+            form.action = config.deviceDataCollectionUrl;
+            // Set the JWT value
+            input.value = config.accessToken;
+
+            // Submit the form
+            form.submit();
+
+            Logger.postMessage("Data collection config received.");
+        };
+
+        // Listen for the response from Cardinal
+        window.addEventListener("message", function (event) {
+            if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
+                // Send the result back to Flutter
+                Logger.postMessage(JSON.stringify(event.data));
+            }
+        }, false);
+    </script>
+</body>
+
+</html>
