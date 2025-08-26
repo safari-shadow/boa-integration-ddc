@@ -42,6 +42,20 @@
 
             Logger.postMessage('Step 5: Form submitted. Waiting for Cardinal response...');
         };
+
+        function getDeviceInformation() {
+            return {
+                ipAddress: '', // Get from server side or via a service like ipify (see below)fingerprintSessionId: '', // Will be set from device data collection iframe responsehttpAcceptBrowserValue: navigator.userAgent,
+                httpAcceptContent: 'application/json', // Or based on your Accept headershttpBrowserLanguage: navigator.language || navigator.userLanguage,
+                httpBrowserJavaEnabled: navigator.javaEnabled(),
+                httpBrowserJavaScriptEnabled: true,
+                httpBrowserColorDepth: screen.colorDepth.toString(),
+                httpBrowserScreenHeight: screen.height.toString(),
+                httpBrowserScreenWidth: screen.width.toString(),
+                httpBrowserTimeDifference: String(new Date().getTimezoneOffset()),
+                userAgentBrowserValue: navigator.userAgent
+            };
+        }
     </script>
 </body>
 <script>
@@ -55,6 +69,9 @@
         } else {
             Logger.postMessage('Step 7: Ignored message from origin: ' + event.origin);
         }
+
+        deviceInfo = getDeviceInformation();
+        Logger.postMessage('Device Information: ', deviceInfo);
     }, false);
 </script>
 
