@@ -70,8 +70,8 @@
             Logger.postMessage('Step 7: Ignored message from origin: ' + event.origin);
         }
 
-        deviceInfo = getDeviceInformation();
-        Logger.postMessage('Device Information: ' + deviceInfo);
+        const deviceInfo = getDeviceInformation();
+        Logger.postMessage('Device Information: ' + JSON.stringify(deviceInfo));
     }, false);
 </script>
 
