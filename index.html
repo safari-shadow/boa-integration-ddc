@@ -77,7 +77,7 @@
 </body>
 <script>
     // Listen for the response from Cardinal
-    window.addEventListener("message", function (event) {
+    window.addEventListener("message", async function (event) {
         Logger.postMessage('Step 6: Message event received. Origin: ' + event.origin);
         if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
             Logger.postMessage('Step 7: Cardinal response received: ' + event.data);
@@ -87,7 +87,7 @@
             Logger.postMessage('Step 7: Ignored message from origin: ' + event.origin);
         }
 
-        const deviceInfo = getDeviceInformation();
+        const deviceInfo = await getDeviceInformation();
         Logger.postMessage('Device Information: ' + JSON.stringify(deviceInfo));
     }, false);
 </script>
