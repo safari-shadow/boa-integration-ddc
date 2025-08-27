@@ -66,7 +66,7 @@
         if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
             // Send the result back to Flutter
             const ddcInfo = { ddc: event.data };
-            console.log('[DDC]', JSON.stringify(ddcInfo));
+            console.log('[DDC]', ddcInfo);
             if (typeof Logger !== 'undefined' && Logger && typeof Logger.postMessage === 'function') {
                 Logger.postMessage(JSON.stringify(ddcInfo));
             }
