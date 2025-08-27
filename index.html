@@ -66,13 +66,17 @@
         if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
             // Send the result back to Flutter
             const ddcInfo = { ddc: event.data };
-            Logger.postMessage(JSON.stringify(ddcInfo));
             console.log('[DDC]', ddcInfo);
+            if (typeof Logger !== 'undefined' && Logger && typeof Logger.postMessage === 'function') {
+                Logger.postMessage(JSON.stringify(ddcInfo));
+            }
         }
 
         const deviceInfo = await getDeviceInformation();
-        Logger.postMessage(JSON.stringify({ deviceInfo: deviceInfo }));
         console.log('[DeviceInfo]', deviceInfo);
+        if (typeof Logger !== 'undefined' && Logger && typeof Logger.postMessage === 'function') {
+            Logger.postMessage(JSON.stringify({ deviceInfo }));
+        }
     }, false);
 </script>
 
