@@ -15,16 +15,6 @@
     </form>
 
     <script>
-        // Logger utility to log to console and postMessage
-        window.Logger = {
-            postMessage: function (msg) {
-                if (window.flutter_inappwebview) {
-                    window.flutter_inappwebview.callHandler('log', msg);
-                }
-                console.log('[LOG]', msg);
-            }
-        };
-
         // Function to receive configuration from Flutter
         window.receiveDataCollectionConfig = function (config) {
             const form = document.getElementById('cardinal_collection_form');
