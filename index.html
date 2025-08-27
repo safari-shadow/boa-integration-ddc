@@ -15,26 +15,26 @@
     </form>
 
     <script>
-        // Safe Logger shim: ensures Logger.postMessage exists even when not provided by the host
-        // For Flutter WebViews the host may inject its own Logger; this shim forwards there when available
-        window.Logger = window.Logger || {
-            postMessage: function (msg) {
-                try {
-                    // If flutter_inappwebview is available, pass the message to the native handler
-                    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
-                        try {
-                            window.flutter_inappwebview.callHandler('log', typeof msg === 'object' ? JSON.stringify(msg) : String(msg));
-                        } catch (e) {
-                            // swallowing errors from host call to avoid breaking the page
-                        }
-                    }
-                } catch (e) {
-                    // ignore
-                }
-                // Always write to console for debugging in browsers
-                try { console.log('[Logger]', msg); } catch (e) { }
-            }
-        };
+        // // Safe Logger shim: ensures Logger.postMessage exists even when not provided by the host
+        // // For Flutter WebViews the host may inject its own Logger; this shim forwards there when available
+        // window.Logger = window.Logger || {
+        //     postMessage: function (msg) {
+        //         try {
+        //             // If flutter_inappwebview is available, pass the message to the native handler
+        //             if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+        //                 try {
+        //                     window.flutter_inappwebview.callHandler('log', typeof msg === 'object' ? JSON.stringify(msg) : String(msg));
+        //                 } catch (e) {
+        //                     // swallowing errors from host call to avoid breaking the page
+        //                 }
+        //             }
+        //         } catch (e) {
+        //             // ignore
+        //         }
+        //         // Always write to console for debugging in browsers
+        //         try { console.log('[Logger]', msg); } catch (e) { }
+        //     }
+        // };
 
         // Function to receive configuration from Flutter
         window.receiveDataCollectionConfig = function (config) {
@@ -82,6 +82,7 @@
         // add a method to post messages using logger here, no extra checks needed
         // Logger is always defined at this point
         function logMessage(msg) {
+            console.log('[logMessage]', JSON.stringify(msg));
             Logger.postMessage(msg);
         }
     </script>
