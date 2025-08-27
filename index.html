@@ -21,7 +21,7 @@
                 if (window.flutter_inappwebview) {
                     window.flutter_inappwebview.callHandler('log', msg);
                 }
-                console.log('[LOG]', JSON.stringify(msg));
+                console.log('[LOG]', msg);
             }
         };
 
@@ -74,11 +74,11 @@
     window.addEventListener("message", async function (event) {
         if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
             // Send the result back to Flutter
-        Logger.postMessage({ddc: event.data});
+        Logger.postMessage({ddc: JSON.stringify(event.data)});
         }
 
         const deviceInfo = await getDeviceInformation();
-        Logger.postMessage({deviceInfo: deviceInfo});
+        Logger.postMessage({deviceInfo: JSON.stringify(deviceInfo)});
     }, false);
 </script>
 
