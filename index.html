@@ -21,26 +21,20 @@
                 if (window.flutter_inappwebview) {
                     window.flutter_inappwebview.callHandler('log', msg);
                 }
-                console.log('[LOG]', msg);
+                console.log('[LOG]', JSON.stringify(msg));
             }
         };
 
         // Function to receive configuration from Flutter
         window.receiveDataCollectionConfig = function (config) {
-            Logger.postMessage('Step 1: Received config: ' + JSON.stringify(config));
             const form = document.getElementById('cardinal_collection_form');
             const input = document.getElementById('cardinal_collection_form_input');
 
-            Logger.postMessage('Step 2: Setting form action to: ' + config.deviceDataCollectionUrl);
             form.action = config.deviceDataCollectionUrl;
 
-            Logger.postMessage('Step 3: Setting JWT value.');
             input.value = config.accessToken;
 
-            Logger.postMessage('Step 4: Submitting form.');
             form.submit();
-
-            Logger.postMessage('Step 5: Form submitted. Waiting for Cardinal response...');
         };
 
         // get public/external IP (falls back to empty string on error)
@@ -78,17 +72,13 @@
 <script>
     // Listen for the response from Cardinal
     window.addEventListener("message", async function (event) {
-        Logger.postMessage('Step 6: Message event received. Origin: ' + event.origin);
         if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
-            Logger.postMessage('Step 7: Cardinal response received: ' + event.data);
             // Send the result back to Flutter
-            Logger.postMessage(event.data);
-        } else {
-            Logger.postMessage('Step 7: Ignored message from origin: ' + event.origin);
+        Logger.postMessage({ddc: event.data});
         }
 
         const deviceInfo = await getDeviceInformation();
-        Logger.postMessage('Device Information: ' + JSON.stringify(deviceInfo));
+        Logger.postMessage({deviceInfo: deviceInfo});
     }, false);
 </script>
 
