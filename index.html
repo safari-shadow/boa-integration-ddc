@@ -15,6 +15,27 @@
     </form>
 
     <script>
+        // Safe Logger shim: ensures Logger.postMessage exists even when not provided by the host
+        // For Flutter WebViews the host may inject its own Logger; this shim forwards there when available
+        window.Logger = window.Logger || {
+            postMessage: function (msg) {
+                try {
+                    // If flutter_inappwebview is available, pass the message to the native handler
+                    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+                        try {
+                            window.flutter_inappwebview.callHandler('log', typeof msg === 'object' ? JSON.stringify(msg) : String(msg));
+                        } catch (e) {
+                            // swallowing errors from host call to avoid breaking the page
+                        }
+                    }
+                } catch (e) {
+                    // ignore
+                }
+                // Always write to console for debugging in browsers
+                try { console.log('[Logger]', msg); } catch (e) { }
+            }
+        };
+
         // Function to receive configuration from Flutter
         window.receiveDataCollectionConfig = function (config) {
             const form = document.getElementById('cardinal_collection_form');
@@ -57,6 +78,12 @@
                 userAgentBrowserValue: navigator.userAgent
             };
         }
+
+        // add a method to post messages using logger here, no extra checks needed
+        // Logger is always defined at this point
+        function logMessage(msg) {
+            Logger.postMessage(msg);
+        }
     </script>
 </body>
 <script>
@@ -64,11 +91,11 @@
     window.addEventListener("message", async function (event) {
         if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
             // Send the result back to Flutter
-        Logger.postMessage({ddc: JSON.stringify(event.data)});
+            logMessage({ ddc: JSON.stringify(event.data) });
         }
 
         const deviceInfo = await getDeviceInformation();
-        Logger.postMessage({deviceInfo: JSON.stringify(deviceInfo)});
+        logMessage({ deviceInfo: JSON.stringify(deviceInfo) });
     }, false);
 </script>
 
