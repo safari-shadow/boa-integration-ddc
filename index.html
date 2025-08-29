@@ -1,83 +1,49 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Data Collection</title>
+    <title>Step-Up Challenge</title>
 </head>
-
 <body>
-    <iframe id="cardinal_collection_iframe" name="collectionIframe" height="1" width="1"
-        style="display: none;"></iframe>
-    <form id="cardinal_collection_form" method="POST" target="collectionIframe">
-        <input id="cardinal_collection_form_input" type="hidden" name="JWT">
+    <iframe id="step-up-iframe" name="step-up-iframe" style="display: none;"></iframe>
+    <form id="step-up-form" method="POST" target="step-up-iframe">
+        <input type="hidden" name="JWT" value="">
+        <input type="hidden" name="MD" value="">
     </form>
 
     <script>
-
-        // Function to receive configuration from Flutter
-        window.receiveDataCollectionConfig = function (config) {
-            const form = document.getElementById('cardinal_collection_form');
-            const input = document.getElementById('cardinal_collection_form_input');
-
-            form.action = config.deviceDataCollectionUrl;
-
-            input.value = config.accessToken;
-
+        window.receiveStepUpConfig = function(config) {
+            const form = document.getElementById('step-up-form');
+            const iframe = document.getElementById('step-up-iframe');
+            
+            // Set form attributes
+            form.action = config.stepUpUrl;
+            
+            // Set iframe dimensions
+            iframe.style.display = 'block';
+            iframe.style.width = config.width + (typeof config.width === 'number' ? 'px' : '');
+            iframe.style.height = config.height + (typeof config.height === 'number' ? 'px' : '');
+            
+            // Set form inputs
+            form.querySelector('input[name="JWT"]').value = config.pareq;
+            form.querySelector('input[name="MD"]').value = config.accessToken;
+            
+            // Submit the form
             form.submit();
-        };
+        }
 
-        // get public/external IP (falls back to empty string on error)
-        async function getPublicIp() {
-            try {
-                const r = await fetch('https://api.ipify.org?format=json'); // or https://ipinfo.io/json
-                if (!r.ok) return '';
-                const j = await r.json();
-                return j.ip || '';
-            } catch (e) {
-                return '';
+        // Listen for step-up completion
+        window.addEventListener("message", function(event) {
+            if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
+                if (typeof StepUpHandler !== 'undefined' && StepUpHandler && typeof StepUpHandler.postMessage === 'function') {
+                    console.log('StepUpHandler is available, sending otp challenge result');
+                    StepUpHandler.postMessage(JSON.stringify({ data: event.data }));
+                } else {
+                    console.warn('StepUpHandler not available');
+                }
             }
-        }
-
-        // gather device info (now async so it can await the IP)
-        async function getDeviceInformation() {
-            const publicIp = await getPublicIp();
-            return {
-                ipAddress: publicIp, // public IP (may be ISP NAT IP)
-                fingerprintSessionId: '', // will be set from iframe response if needed
-                httpAcceptBrowserValue: navigator.userAgent,
-                httpAcceptContent: 'application/json',
-                httpBrowserLanguage: navigator.language || navigator.userLanguage,
-                httpBrowserJavaEnabled: typeof navigator.javaEnabled === 'function' ? navigator.javaEnabled() : false,
-                httpBrowserJavaScriptEnabled: true,
-                httpBrowserColorDepth: String(screen.colorDepth || ''),
-                httpBrowserScreenHeight: String(screen.height || ''),
-                httpBrowserScreenWidth: String(screen.width || ''),
-                httpBrowserTimeDifference: String(new Date().getTimezoneOffset()),
-                userAgentBrowserValue: navigator.userAgent
-            };
-        }
+        }, false);
     </script>
 </body>
-<script>
-    // Listen for the response from Cardinal
-    window.addEventListener("message", async function (event) {
-        if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
-            // Send the result back to Flutter
-            const ddcInfo = { ddc: event.data };
-            console.log('[DDC]', ddcInfo);
-            if (typeof Logger !== 'undefined' && Logger && typeof Logger.postMessage === 'function') {
-                Logger.postMessage(JSON.stringify(ddcInfo));
-            }
-        }
-
-        const deviceInfo = await getDeviceInformation();
-        console.log('[DeviceInfo]', JSON.stringify(deviceInfo));
-        if (typeof Logger !== 'undefined' && Logger && typeof Logger.postMessage === 'function') {
-            Logger.postMessage(JSON.stringify({ deviceInfo }));
-        }
-    }, false);
-</script>
-
 </html>
