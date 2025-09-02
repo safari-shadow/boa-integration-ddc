@@ -34,8 +34,8 @@
 
             // Set form inputs
             console.log('Setting form inputs: JWT and MD');
-            form.querySelector('input[name="JWT"]').value = config.pareq;
-            form.querySelector('input[name="MD"]').value = config.accessToken;
+            form.querySelector('input[name="JWT"]').value = config.accessToken;
+            form.querySelector('input[name="MD"]').value = config.transactionReference || '';
             console.log('Form inputs set', { JWT: form.querySelector('input[name="JWT"]').value ? 'SET' : 'EMPTY', MD: form.querySelector('input[name="MD"]').value ? 'SET' : 'EMPTY' });
 
             // Listen for iframe load to know when submission finished
